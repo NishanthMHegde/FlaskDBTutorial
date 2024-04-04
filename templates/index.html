@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %} People Database {% endblock %}
+{% block content %}
+{% if current_user.is_authenticated %}
+<h4> Welcome {{current_user.username}} ! </h4>
+{% for person in people %}
+<ul>
+	<li>{{person.name}} who is aged {{person.age}} works as {{person.job}}</li> <button onclick="deleteUser({{person.pid}})">Delete User</button>
+</ul>
+{% endfor %}
+
+
+<h3> Add a new user to our database! </h3>
+<form method="POST" action ="{{url_for('index')}}">
+	<input type="text" name="name" placeholder="name" /><br/>
+	<input type="number" name="age" placeholder="age" /><br/>
+	<input type="text" name="job" placeholder="job" /><br/>
+	<input type="submit" value="Create!">
+</form>
+<script type="text/javascript">
+	function deleteUser(pid){
+		fetch('{{url_for("delete_person", pid=pid)}}' + pid ,{
+			method: 'DELETE'
+		}).then(resp => {
+			if (resp.ok){
+				window.location.reload()
+			}
+			else{
+				console.log("Error obtained when deleting user")
+			}
+		}).catch(err =>{
+			console.log(err)
+		})
+	}
+	</script>
+<a href="{{url_for('logout')}}">Log Out</a>
+{% else %}
+<a href="{{url_for('login')}}">Log In</a>
+<a href="{{url_for('signup')}}">Sign Up</a>
+
+{% endif %}
+
+{% endblock %}
